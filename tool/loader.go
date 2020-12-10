@@ -66,28 +66,29 @@ func NewImgLoader(filePath string) (il ImgLoader, err error) {
 	return
 }
 
-func (il *ImgLoader)GetDX() int {
-	if il.GetDY() == 0 {
-		return 0
-	}
-
-	return len(il.matrix[0])
-}
-
-func (il *ImgLoader)GetDY() int {
-	return len(il.matrix)
+func (il *ImgLoader)GetImg() image.Image {
+	return il.img
 }
 
 func (il *ImgLoader)GetMatrix() [][][]uint8 {
-	matrix := NewRGBAMatrix(il.GetDY(), il.GetDX())
+	matrix := NewRGBAMatrix(il.GetMY(), il.GetMY())
 
-	for hi := range matrix {
-		for wi := range matrix[hi] {
-			_ = copy(matrix[hi][wi], il.matrix[hi][wi])
-		}
-	}
+	copy(matrix, il.matrix)
+	//for hi := range matrix {
+	//	for wi := range matrix[hi] {
+	//		_ = copy(matrix[hi][wi], il.matrix[hi][wi])
+	//	}
+	//}
 
 	return matrix
+}
+
+func (il *ImgLoader)GetMX() int {
+	return len(il.matrix[0])
+}
+
+func (il *ImgLoader)GetMY() int {
+	return len(il.matrix)
 }
 
 func (il *ImgLoader)GetFileName() string {

@@ -64,6 +64,8 @@ func (app App)Run() {
 			app.dealWithResize()
 		case strings.ToLower("AdjustBrightness"):
 			app.dealWithAdjBrit()
+		case strings.ToLower("ToASCII"):
+			app.dealWithToASCII()
 		}
 	}
 }
@@ -157,7 +159,7 @@ func (app App)dealWithSunSet()  {
 	}
 
 	savePath := path.Join(tool.RESULT, "Sunset-"+il.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.SunsetEffect(&il))
+	err = tool.SaveAsPng( savePath, app.Processor.SunsetEffect(&il).GetMatrix())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -182,7 +184,7 @@ func (app App)dealWithNegativeFilm() {
 	}
 
 	savePath := path.Join(tool.RESULT, "NegativeFilm-"+il.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.NegativeFilmEffect(&il))
+	err = tool.SaveAsPng( savePath, app.Processor.NegativeFilmEffect(&il).GetMatrix())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -207,7 +209,7 @@ func (app App)dealWithRotate() {
 	}
 
 	savePath := path.Join(tool.RESULT, "Rotate-"+il.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.Rotate(&il))
+	err = tool.SaveAsPng( savePath, app.Processor.Rotate(&il).GetMatrix())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -232,7 +234,31 @@ func (app App)dealWithToGray() {
 	}
 
 	savePath := path.Join(tool.RESULT, "Gray-"+il.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.RGB2Gray(&il))
+	err = tool.SaveAsPng( savePath, app.Processor.RGB2Gray(&il).GetMatrix())
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	fmt.Println("Succeed, enjoy it")
+	fmt.Println()
+}
+
+func (app App)dealWithToASCII() {
+	app.listRaw()
+	filename := app.getChoice()
+	if isValid := app.checkRawChoice(filename); !isValid {
+		fmt.Println("inValid input!")
+		return
+	}
+
+	il, err := tool.NewImgLoader(path.Join(tool.RAW, filename))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	err = app.Processor.RGB2ASCII(&il)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -259,6 +285,7 @@ func (app App)dealWithFingerPrint() {
 	fmt.Println("FingerPrint: ", app.Processor.GetFingerPrint(&il))
 	fmt.Println()
 }
+
 func (app App)dealWithBase64Enc() {
 	app.listRaw()
 	filename := app.getChoice()
@@ -349,7 +376,7 @@ func (app App)dealWithResize() {
 	}
 
 	savePath := path.Join(tool.RESULT, "Resize-"+il.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.Resize(&il, height, width))
+	err = tool.SaveAsPng( savePath, app.Processor.Resize(&il, height, width).GetMatrix())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -381,7 +408,7 @@ func (app App)dealWithFusion() {
 	}
 
 	savePath := path.Join(tool.RESULT, "fusion-"+il1.GetFileName()+il2.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.ImageFusion(&il1, &il2))
+	err = tool.SaveAsPng( savePath, app.Processor.ImageFusion(&il1, &il2).GetMatrix())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -418,7 +445,7 @@ func (app App)dealWithAdjBrit() {
 	}
 
 	savePath := path.Join(tool.RESULT, "AdjBrit-"+il.GetFileName()+".png")
-	err = tool.SaveAsPng( savePath, app.Processor.AdjustBrightness(&il, light))
+	err = tool.SaveAsPng( savePath, app.Processor.AdjustBrightness(&il, light).GetMatrix())
 	if err != nil {
 		fmt.Println(err.Error())
 		return

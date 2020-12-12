@@ -5,8 +5,10 @@ import (
 	"github.com/yue-qiu/imgProc/tool"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"path"
 	"strings"
+	"syscall"
 )
 
 type App struct {
@@ -35,11 +37,20 @@ func NewApp() (App, error) {
 }
 
 func (app App)Run() {
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, syscall.SIGINT, syscall.SIGKILL)
+
+	go func() {
+		_ = <-done
+		fmt.Println("quit")
+		os.Exit(1)
+	}()
+
 	for true {
 		app.listActions()
 		action := strings.ToLower(app.getChoice())
 		if isValid := app.checkActChoice(action); !isValid {
-			fmt.Println("Error, invalid choice!")
+			fmt.Printf("Error, invalid choice: %s\n", action)
 			continue
 		}
 
